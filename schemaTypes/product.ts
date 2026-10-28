@@ -37,10 +37,27 @@ export const product = defineType({
       of: [defineArrayMember({ type: 'block' })],
     }),
     defineField({
-      name: 'mainImage',
-      title: 'Catalog Thumbnail',
+      name: 'frontImage',
+      title: 'Front Catalog Thumbnail',
       type: 'image',
       options: { hotspot: true },
+    }),
+    defineField({
+      name: 'backImage',
+      title: 'Back Catalog Thumbnail',
+      type: 'image',
+      options: { hotspot: true },
+    }),
+    defineField({
+      name: 'mainImage',
+      title: 'Catalog Thumbnail (Legacy)',
+      type: 'image',
+      options: { hotspot: true },
+      deprecated: {
+        reason: 'Use "Front Catalog Thumbnail" and "Back Catalog Thumbnail" instead.',
+      },
+      hidden: ({ value }) => value === undefined,
+      readOnly: true,
     }),
     defineField({
       name: 'category',
@@ -95,7 +112,15 @@ export const product = defineType({
     select: {
       title: 'name',
       subtitle: 'priceRange',
-      media: 'mainImage',
+      frontMedia: 'frontImage',
+      legacyMedia: 'mainImage',
+    },
+    prepare({ title, subtitle, frontMedia, legacyMedia }) {
+      return {
+        title,
+        subtitle,
+        media: frontMedia || legacyMedia,
+      }
     },
   },
 })
