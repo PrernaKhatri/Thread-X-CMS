@@ -26,11 +26,6 @@ export const product = defineType({
       type: 'number',
     }),
     defineField({
-      name: 'priceRange',
-      title: 'Price Range (e.g. $15 - $28)',
-      type: 'string',
-    }),
-    defineField({
       name: 'description',
       title: 'Description',
       type: 'array',
@@ -47,17 +42,6 @@ export const product = defineType({
       title: 'Back Catalog Thumbnail',
       type: 'image',
       options: { hotspot: true },
-    }),
-    defineField({
-      name: 'mainImage',
-      title: 'Catalog Thumbnail (Legacy)',
-      type: 'image',
-      options: { hotspot: true },
-      deprecated: {
-        reason: 'Use "Front Catalog Thumbnail" and "Back Catalog Thumbnail" instead.',
-      },
-      hidden: ({ value }) => value === undefined,
-      readOnly: true,
     }),
     defineField({
       name: 'category',
@@ -117,15 +101,14 @@ export const product = defineType({
   preview: {
     select: {
       title: 'name',
-      subtitle: 'priceRange',
-      frontMedia: 'frontImage',
-      legacyMedia: 'mainImage',
+      basePrice: 'basePrice',
+      media: 'frontImage',
     },
-    prepare({ title, subtitle, frontMedia, legacyMedia }) {
+    prepare({ title, basePrice, media }) {
       return {
         title,
-        subtitle,
-        media: frontMedia || legacyMedia,
+        subtitle: basePrice ? `₹${basePrice}` : undefined,
+        media,
       }
     },
   },

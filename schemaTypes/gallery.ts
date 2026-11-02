@@ -1,12 +1,15 @@
 import { defineField, defineType } from 'sanity'
 import { ImagesIcon } from '@sanity/icons/Images'
+import { orderRankField, orderRankOrdering } from '@sanity/orderable-document-list'
 
 export const gallery = defineType({
   name: 'gallery',
   title: 'Gallery',
   type: 'document',
   icon: ImagesIcon,
+  orderings: [orderRankOrdering],
   fields: [
+    orderRankField({ type: 'gallery' }),
     defineField({
       name: 'title',
       title: 'T-Shirt Name',
@@ -21,13 +24,6 @@ export const gallery = defineType({
       description: 'Upload cutout / model photo of the t-shirt',
       options: { hotspot: true },
       validation: (Rule) => Rule.required(),
-    }),
-    defineField({
-      name: 'order',
-      title: 'Display Order',
-      type: 'number',
-      description: 'Optional sorting number (1, 2, 3...)',
-      initialValue: 0,
     }),
   ],
   preview: {
