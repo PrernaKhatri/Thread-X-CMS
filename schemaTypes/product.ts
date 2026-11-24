@@ -1,3 +1,4 @@
+
 import { defineArrayMember, defineField, defineType } from 'sanity'
 import { PackageIcon } from '@sanity/icons/Package'
 
@@ -8,8 +9,21 @@ export const product = defineType({
   icon: PackageIcon,
   fields: [
     defineField({
+    name: 'isFeatured',
+    title: 'Featured Product',
+    type: 'boolean',
+    initialValue: false,
+    description: 'Enable this to display the product as a featured product.',
+  }),
+    defineField({
       name: 'name',
       title: 'Product Name',
+      type: 'string',
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'productName',
+      title: 'Name of Product',
       type: 'string',
       validation: (Rule) => Rule.required(),
     }),
@@ -19,6 +33,61 @@ export const product = defineType({
       type: 'slug',
       options: { source: 'name' },
       validation: (Rule) => Rule.required(),
+    }),
+    defineField({
+      name: 'tagline',
+      title: 'Tagline',
+      type: 'string',
+    }),
+    defineField({
+      name: 'fabric',
+      title: 'Fabric',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'reference',
+          to: [{ type: 'fabric' }],
+        }),
+      ],
+    }),
+    defineField({
+      name: 'badge',
+      title: 'Product Badge',
+      type: 'reference',
+      to: [{ type: 'badge' }],
+    }),
+    defineField({
+      name: 'availableColors',
+      title: 'Available Colors',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'reference',
+          to: [{ type: 'colors' }],
+        }),
+      ],
+    }),
+    defineField({
+      name: 'collarSleeveColor',
+      title: 'Collar & Sleeve Colors',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'reference',
+          to: [{ type: 'colors' }],
+        }),
+      ],
+    }),
+    defineField({
+      name: 'tippingColor',
+      title: 'Tipping Colors',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'reference',
+          to: [{ type: 'colors' }],
+        }),
+      ],
     }),
     defineField({
       name: 'basePrice',
@@ -49,7 +118,8 @@ export const product = defineType({
       type: 'reference',
       to: [{ type: 'category' }],
     }),
-    // Customizer Masks (Replacing ACF front_base, front_body, front_collar, etc.)
+
+    // Customizer Masks (Existing)
     defineField({
       name: 'masks',
       title: 'Customizer Mask Layers',
@@ -99,6 +169,69 @@ export const product = defineType({
         }),
       ],
     }),
+
+    // Additional Masks (New)
+    defineField({
+      name: 'additionalMasks',
+      title: 'Additional Mask Variations',
+      type: 'array',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'additionalMask',
+          title: 'Additional Mask',
+          fields: [
+            defineField({
+              name: 'base',
+              title: 'Base Mask (PNG)',
+              type: 'image',
+              options: { hotspot: true },
+              description: 'Upload the base mask for this additional customization.',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'body',
+              title: 'Body Mask (PNG)',
+              type: 'image',
+              options: { hotspot: true },
+              description: 'Upload the body mask for this additional customization.',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'collar',
+              title: 'Collar Mask (PNG)',
+              type: 'image',
+              options: { hotspot: true },
+              description: 'Upload the collar mask for this additional customization.',
+              validation: (Rule) => Rule.required(),
+            }),
+            defineField({
+              name: 'tippingSingle',
+              title: 'Single Tipping Mask (PNG)',
+              type: 'image',
+              options: { hotspot: true },
+              description: 'Upload mask to show Single Stripe Tipping option in the front-end customizer.',
+            }),
+            defineField({
+              name: 'tippingDouble',
+              title: 'Double Tipping Mask (PNG)',
+              type: 'image',
+              options: { hotspot: true },
+              description: 'Upload mask to show Double Stripe Tipping option in the front-end customizer.',
+            }),
+            defineField({
+              name: 'tippingTriple',
+              title: 'Triple Tipping Mask (PNG)',
+              type: 'image',
+              options: { hotspot: true },
+              description: 'Upload mask to show Triple Stripe Tipping option in the front-end customizer.',
+            }),
+          ],
+        }),
+      ],
+    }),
+
+
     // Available Colorways / Variants
     defineField({
       name: 'colorways',
@@ -129,17 +262,19 @@ export const product = defineType({
     }),
   ],
   preview: {
-    select: {
-      title: 'name',
-      basePrice: 'basePrice',
-      media: 'frontImage',
-    },
-    prepare({ title, basePrice, media }) {
-      return {
-        title,
-        subtitle: basePrice ? `₹${basePrice}` : undefined,
-        media,
-      }
-    },
+  select: {
+    title: 'name',
+    basePrice: 'basePrice',
+    media: 'frontImage',
+    isFeatured: 'isFeatured',
   },
+  prepare({ title, basePrice, media, isFeatured }) {
+    const price = basePrice ? `₹${basePrice}` : ''
+    return {
+      title: title,
+      subtitle: isFeatured ? `Featured${price ? ` • ${price}` : ''}` : price || undefined,
+      media,
+    }
+  },
+},
 })
