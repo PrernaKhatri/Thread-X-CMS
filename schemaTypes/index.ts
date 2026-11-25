@@ -5,5 +5,6 @@ import { fabricCategory } from './fabricCategory'
 import { fabric } from './fabric'
 import { colors } from './colors'
 import { badge } from './badge'
+import { order } from './order'
 
-export const schemaTypes = [product, category, gallery, fabricCategory, fabric, colors, badge]
+export const schemaTypes = [product, category, gallery, fabricCategory, fabric, colors, badge, order]
