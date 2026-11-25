@@ -35,6 +35,13 @@ export const product = defineType({
       validation: (Rule) => Rule.required(),
     }),
     defineField({
+      name: 'productSlug',
+      title: 'Product Slug',
+      type: 'slug',
+      options: { source: 'productName' },
+      validation: (Rule) => Rule.required(),
+    }),
+    defineField({
       name: 'tagline',
       title: 'Tagline',
       type: 'string',
@@ -55,39 +62,6 @@ export const product = defineType({
       title: 'Product Badge',
       type: 'reference',
       to: [{ type: 'badge' }],
-    }),
-    defineField({
-      name: 'availableColors',
-      title: 'Available Colors',
-      type: 'array',
-      of: [
-        defineArrayMember({
-          type: 'reference',
-          to: [{ type: 'colors' }],
-        }),
-      ],
-    }),
-    defineField({
-      name: 'collarSleeveColor',
-      title: 'Collar & Sleeve Colors',
-      type: 'array',
-      of: [
-        defineArrayMember({
-          type: 'reference',
-          to: [{ type: 'colors' }],
-        }),
-      ],
-    }),
-    defineField({
-      name: 'tippingColor',
-      title: 'Tipping Colors',
-      type: 'array',
-      of: [
-        defineArrayMember({
-          type: 'reference',
-          to: [{ type: 'colors' }],
-        }),
-      ],
     }),
     defineField({
       name: 'basePrice',
@@ -170,7 +144,7 @@ export const product = defineType({
       ],
     }),
 
-    // Additional Masks (New)
+    // Additional Masks
     defineField({
       name: 'additionalMasks',
       title: 'Additional Mask Variations',

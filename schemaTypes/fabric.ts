@@ -1,5 +1,5 @@
 
-import { defineField, defineType } from 'sanity'
+import { defineArrayMember, defineField, defineType } from 'sanity'
 import { PackageIcon } from '@sanity/icons/Package'
 
 export const fabric = defineType({
@@ -36,28 +36,77 @@ export const fabric = defineType({
     defineField({
       name: 'gsm',
       title: 'GSM',
-      type: 'string',
+      type: 'number',
+    }),
+
+    // Category-wise Pricing
+    defineField({
+      name: 'categoryPricing',
+      title: 'Category-wise Pricing',
+      type: 'array',
+      description: 'Set different prices for this fabric based on product category.',
+      of: [
+        defineArrayMember({
+          type: 'object',
+          name: 'categoryPrice',
+          title: 'Category Price',
+          fields: [
+            defineField({
+              name: 'category',
+              title: 'Product Category',
+              type: 'reference',
+              to: [{ type: 'category' }],
+              validation: (Rule) => Rule.required(),
+            }),
+
+            defineField({
+              name: 'price',
+              title: 'Price',
+              type: 'number',
+              validation: (Rule) => Rule.required().min(0),
+            }),
+          ],
+
+          preview: {
+            select: {
+              title: 'category.name',
+              price: 'price',
+            },
+            prepare({ title, price }) {
+              return {
+                title: title || 'Select Category',
+                subtitle: price !== undefined ? `₹${price}` : 'Price not set',
+              }
+            },
+          },
+        }),
+      ],
     }),
 
     defineField({
-      name: 'price',
-      title: 'Price',
-      type: 'number',
+      name: 'availableColors',
+      title: 'Available Colors',
+      type: 'array',
+      description: 'Select all available colors for the T-shirt, collar, and tipping.',
+      of: [
+        defineArrayMember({
+          type: 'reference',
+          to: [{ type: 'colors' }],
+        }),
+      ],
     }),
   ],
 
- preview: {
+  preview: {
     select: {
       title: 'name',
       category: 'fabricCategory.name',
-      price: 'price',
       media: 'image',
     },
-    prepare({ title, category, price, media }) {
-      const priceText = price ? `₹${price}` : ''
+    prepare({ title, category, media }) {
       return {
         title,
-        subtitle: [category, priceText].filter(Boolean).join(' • '),
+        subtitle: category || '',
         media,
       }
     },

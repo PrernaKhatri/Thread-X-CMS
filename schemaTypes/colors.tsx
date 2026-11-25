@@ -15,19 +15,22 @@ export const colors = defineType({
       type: 'string',
       validation: (Rule) =>
         Rule.required().custom(async (value, context) => {
-          if (!value) return true
+          if (!value?.trim()) return true
 
           const client = context.getClient({ apiVersion: '2024-01-01' })
+          const currentId = context.document?._id?.replace(/^drafts\./, '')
 
           const existing = await client.fetch(
             `count(*[
               _type == "colors" &&
               lower(name) == lower($name) &&
-              _id != $id
+              _id != $publishedId &&
+              _id != $draftId
             ])`,
             {
               name: value.trim(),
-              id: context.document?._id?.replace(/^drafts\./, ''),
+              publishedId: currentId,
+              draftId: `drafts.${currentId}`,
             },
           )
 
@@ -46,19 +49,22 @@ export const colors = defineType({
             name: 'HEX color',
           })
           .custom(async (value, context) => {
-            if (!value) return true
+            if (!value?.trim()) return true
 
             const client = context.getClient({ apiVersion: '2024-01-01' })
+            const currentId = context.document?._id?.replace(/^drafts\./, '')
 
             const existing = await client.fetch(
               `count(*[
                 _type == "colors" &&
                 lower(hexCode) == lower($hexCode) &&
-                _id != $id
+                _id != $publishedId &&
+                _id != $draftId
               ])`,
               {
                 hexCode: value.trim(),
-                id: context.document?._id?.replace(/^drafts\./, ''),
+                publishedId: currentId,
+                draftId: `drafts.${currentId}`,
               },
             )
 
